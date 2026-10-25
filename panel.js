@@ -128,23 +128,33 @@ function render(res) {
   }
 }
 
-// Remember start/end per video so you can come back to it later.
+// Per-video settings ({ start, end, rate }) live in storage.sync so they follow
+// you across devices. Older versions saved to storage.local, so fall back to it.
+async function loadSettings(videoId) {
+  const key = `video:${videoId}`;
+  const synced = (await chrome.storage.sync.get(key))[key];
+  return synced ?? (await chrome.storage.local.get(key))[key] ?? {};
+}
+
+async function saveSettings(videoId, changes) {
+  if (!videoId) return;
+  const settings = { ...(await loadSettings(videoId)), ...changes };
+  chrome.storage.sync.set({ [`video:${videoId}`]: settings });
+}
+
 async function restoreForVideo(res) {
+  if (!currentVideoId) return;
+  const saved = await loadSettings(currentVideoId);
   if (res.loop) {
     startInput.value = formatTime(res.loop.start);
     endInput.value = formatTime(res.loop.end);
-    return;
+  } else {
+    startInput.value = saved.start != null ? formatTime(saved.start) : '';
+    endInput.value = saved.end != null ? formatTime(saved.end) : '';
   }
-  if (!currentVideoId) return;
-  const key = `video:${currentVideoId}`;
-  const saved = (await chrome.storage.local.get(key))[key];
-  startInput.value = saved ? formatTime(saved.start) : '';
-  endInput.value = saved ? formatTime(saved.end) : '';
-}
-
-function saveForVideo(start, end) {
-  if (!currentVideoId) return;
-  chrome.storage.local.set({ [`video:${currentVideoId}`]: { start, end } });
+  if (saved.rate && Math.abs(saved.rate - res.rate) > 0.001) {
+    render(await run('speed', saved.rate));
+  }
 }
 
 function showError(text) {
@@ -173,7 +183,7 @@ async function startLoop() {
   const t = readInputs();
   if (!t) return;
   const res = await run('start', t.start, t.end);
-  if (res.ok) saveForVideo(t.start, t.end);
+  if (res.ok) saveSettings(res.videoId, { start: t.start, end: t.end });
   render(res);
 }
 
@@ -205,9 +215,16 @@ function renderSpeed(rate) {
   });
 }
 
+let saveSpeedTimer;
+
 async function setSpeed(rate) {
   rate = Math.min(MAX_SPEED, Math.max(MIN_SPEED, Math.round(rate * 100) / 100));
-  render(await run('speed', rate));
+  const res = await run('speed', rate);
+  render(res);
+  if (!res.ok) return;
+  // Debounced: dragging the slider fires many events, and storage.sync has write quotas.
+  clearTimeout(saveSpeedTimer);
+  saveSpeedTimer = setTimeout(() => saveSettings(res.videoId, { rate }), 500);
 }
 
 async function nudgeSpeed(delta) {

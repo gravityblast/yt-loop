@@ -8,7 +8,7 @@ A Brave/Chrome extension for looping a section of a YouTube video from the sideb
 - **Now** buttons grab the current playback time
 - Fine-tune points with ±0.1s / ±1s buttons, or ↑/↓ in a field (Shift = 1s)
 - **Playback speed** from 0.1× to 4×, in 0.05 steps, including values YouTube's menu doesn't offer (e.g. 0.85×)
-- Loop points are remembered per video
+- Loop points and speed are remembered per video, and synced across devices via Brave/Chrome Sync
 - Lives in the side panel, so it stays open while you play
 
 ## 🔧 Install
