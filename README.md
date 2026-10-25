@@ -33,4 +33,4 @@ After pulling changes, hit the reload arrow on the extension card and reload the
 
 - Works on regular watch pages (`youtube.com/watch?v=…`), not Shorts
 - Controls whichever YouTube tab is active
-- The loop stops automatically when you navigate to another video
+- The loop stops automatically when you navigate to another video or close the panel

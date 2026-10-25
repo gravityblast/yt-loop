@@ -287,3 +287,11 @@ async function poll() {
 poll();
 setInterval(poll, 500);
 chrome.tabs.onActivated.addListener(poll);
+
+// Lets the background script know when the panel closes, so it can stop the loop.
+// If the service worker restarts, the port drops while the panel is still open:
+// reconnect so the new worker sees the eventual close.
+function connectToBackground() {
+  chrome.runtime.connect({ name: 'panel' }).onDisconnect.addListener(connectToBackground);
+}
+connectToBackground();
