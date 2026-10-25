@@ -2,6 +2,7 @@ const $ = (id) => document.getElementById(id);
 const startInput = $('start');
 const endInput = $('end');
 const statusEl = $('status');
+const notesInput = $('notes');
 
 let currentVideoId = null;
 let holdMessageUntil = 0; // keep validation errors visible for a moment
@@ -139,7 +140,11 @@ async function loadSettings(videoId) {
 async function saveSettings(videoId, changes) {
   if (!videoId) return;
   const settings = { ...(await loadSettings(videoId)), ...changes };
-  chrome.storage.sync.set({ [`video:${videoId}`]: settings });
+  try {
+    await chrome.storage.sync.set({ [`video:${videoId}`]: settings });
+  } catch (err) {
+    showError(`Couldn't save: ${err.message}`);
+  }
 }
 
 async function restoreForVideo(res) {
@@ -152,6 +157,7 @@ async function restoreForVideo(res) {
     startInput.value = saved.start != null ? formatTime(saved.start) : '';
     endInput.value = saved.end != null ? formatTime(saved.end) : '';
   }
+  notesInput.value = saved.notes ?? '';
   if (saved.rate && Math.abs(saved.rate - res.rate) > 0.001) {
     render(await run('speed', saved.rate));
   }
@@ -239,6 +245,15 @@ $('speedUp').addEventListener('click', () => nudgeSpeed(0.05));
 $('speedPresets').addEventListener('click', (e) => {
   const rate = e.target.dataset.rate;
   if (rate) setSpeed(parseFloat(rate));
+});
+
+// Notes save automatically, shortly after you stop typing.
+let saveNotesTimer;
+notesInput.addEventListener('input', () => {
+  const videoId = currentVideoId;
+  const notes = notesInput.value;
+  clearTimeout(saveNotesTimer);
+  saveNotesTimer = setTimeout(() => saveSettings(videoId, { notes }), 500);
 });
 
 $('loop').addEventListener('click', startLoop);

@@ -41,6 +41,7 @@ h1 { font-size: 16px; margin: 0 0 12px; }
 .now strong { font-size: 20px; }
 
 label { display: block; font-weight: 600; margin: 12px 0 4px; }
+label[for=notes] { margin-top: 20px; }
 
 .row { display: flex; gap: 6px; }
 
@@ -55,6 +56,17 @@ input {
   border: 1px solid var(--border);
   border-radius: 6px;
 }
+textarea {
+  width: 100%;
+  padding: 8px;
+  font: inherit;
+  color: var(--fg);
+  background: var(--input);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  resize: vertical;
+}
+
 input.invalid { border-color: var(--accent); }
 
 button {
