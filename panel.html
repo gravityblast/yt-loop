@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>YT Loop</title>
+  <link rel="stylesheet" href="panel.css">
+</head>
+<body>
+  <h1>YT Loop</h1>
+
+  <div class="now">
+    <span>Now</span>
+    <strong id="current">--:--</strong>
+    <span class="muted">/ <span id="duration">--:--</span></span>
+  </div>
+
+  <label for="start">Start</label>
+  <div class="row">
+    <input id="start" type="text" placeholder="e.g. 1:05 or 65" autocomplete="off">
+    <button id="startNow" title="Use current time">Now</button>
+  </div>
+  <div class="nudge" data-target="start">
+    <button data-delta="-1">−1s</button>
+    <button data-delta="-0.1">−0.1</button>
+    <button data-delta="0.1">+0.1</button>
+    <button data-delta="1">+1s</button>
+  </div>
+
+  <label for="end">End</label>
+  <div class="row">
+    <input id="end" type="text" placeholder="e.g. 1:20.5" autocomplete="off">
+    <button id="endNow" title="Use current time">Now</button>
+  </div>
+  <div class="nudge" data-target="end">
+    <button data-delta="-1">−1s</button>
+    <button data-delta="-0.1">−0.1</button>
+    <button data-delta="0.1">+0.1</button>
+    <button data-delta="1">+1s</button>
+  </div>
+
+  <div class="actions">
+    <button id="loop" class="primary">Start loop</button>
+    <button id="stop">Stop</button>
+  </div>
+
+  <p id="status" class="muted"></p>
+
+  <div class="speed-header">
+    <label for="speedSlider">Speed</label>
+    <strong id="speedValue">1×</strong>
+  </div>
+  <div class="row speed-row">
+    <button id="speedDown" title="Slower (−0.05)">−</button>
+    <input id="speedSlider" type="range" min="0.25" max="2" step="0.05" value="1">
+    <button id="speedUp" title="Faster (+0.05)">+</button>
+  </div>
+  <div id="speedPresets" class="nudge">
+    <button data-rate="0.5">0.5</button>
+    <button data-rate="0.75">0.75</button>
+    <button data-rate="1">1</button>
+    <button data-rate="1.25">1.25</button>
+    <button data-rate="1.5">1.5</button>
+    <button data-rate="2">2</button>
+  </div>
+
+  <p class="hint muted">Formats: <code>65</code>, <code>1:05</code>, <code>1:05.5</code>, <code>1:02:03</code>. Press Enter in a field to (re)start the loop.</p>
+
+  <script src="panel.js"></script>
+</body>
+</html>
